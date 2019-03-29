@@ -37,7 +37,7 @@ load10X = function(dataDirs,channelNames=NULL,...){
 #'
 #' @export
 #' @importFrom Seurat Read10X_h5
-load10XH5 = function(h5Files, channelNames=NULL, ...){
+load10XH5 = function(h5Files, channelNames=NULL, callCellMode="loose"){
   if(is.null(channelNames))
     channelNames <- sprintf('Channel%d',seq_along(h5Files))
   channels <- list()
@@ -47,8 +47,16 @@ load10XH5 = function(h5Files, channelNames=NULL, ...){
     #Load unfiltered matrix using DropletUtils
     tod <- Read10X_h5(h5File)
     is.cell <- emptyDrops(tod)$FDR <= 0.05
-    channels[[channelNames[i]]] <- SoupChannel(tod, tod[,is.cell,drop=FALSE],
-                                   channelName=channelNames[i],path=h5File,dataType='10X',...)
+    if(callCellMode=="loose"){
+      is.cell[is.na(is.cell)] <- FALSE
+      toc <- tod[, is.cell, drop=FALSE]
+    }
+    if(callCellMode=="strict"){
+      tod <- tod[, !is.na(is.cell), drop=FALSE]
+      is.cell <- is.cell[!is.na(is.cell), drop=FALSE]
+      toc <- tod[, is.cell, drop=FALSE]
+    }
+    channels[[channelNames[i]]] <- SoupChannel(tod, toc, channelName=channelNames[i], path=h5File, dataType='10X',...)
   }
   SoupChannelList(channels)
 }
