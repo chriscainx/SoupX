@@ -37,12 +37,11 @@ load10X = function(dataDirs,channelNames=NULL,...){
 #'
 #' @export
 #' @importFrom Seurat Read10X_h5
-#' @importFrom BiocParallel bplapply
-#' @importFrom BiocParallel MulticoreParam
 load10XH5 = function(h5Files, channelNames=NULL, callCellMode="loose", ...){
   if(is.null(channelNames))
     channelNames <- sprintf('Channel%d',seq_along(h5Files))
-  channels <- bplapply(seq_along(h5Files), function(i){
+  channels <- list()
+  for(i in seq_along(h5Files)){
     message(sprintf("Loading data for 10X channel %s from %s",channelNames[i], h5Files[i]))
     h5File <- h5Files[i]
     #Load unfiltered matrix using DropletUtils
@@ -58,6 +57,6 @@ load10XH5 = function(h5Files, channelNames=NULL, callCellMode="loose", ...){
       toc <- tod[, is.cell, drop=FALSE]
     }
     channels[[channelNames[i]]] <- SoupChannel(tod, toc, channelName=channelNames[i], path=h5File, dataType='10X',...)
-  }, BPPARAM=MulticoreParam())
+  }
   SoupChannelList(channels)
 }
