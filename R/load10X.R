@@ -37,7 +37,7 @@ load10X = function(dataDirs,channelNames=NULL,...){
 #'
 #' @export
 #' @importFrom Seurat Read10X_h5
-load10XH5 = function(h5Files, channelNames=NULL, callCellMode="loose"){
+load10XH5 = function(h5Files, channelNames=NULL, callCellMode="loose", ...){
   if(is.null(channelNames))
     channelNames <- sprintf('Channel%d',seq_along(h5Files))
   channels <- list()
