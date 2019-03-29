@@ -31,6 +31,11 @@ load10X = function(dataDirs,channelNames=NULL,...){
   return(channels)
 }
 
+#' Load a collection of 10X data-sets
+#'
+#' Loads unfiltered 10X data from each data-set and identifies which droplets are cells using the cellranger defaults.
+#'
+#' @export
 #' @importFrom DropletUtils read10xCounts
 load10XH5 = function(h5Files, channelNames=NULL, ...){
   if(is.null(channelNames))
