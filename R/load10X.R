@@ -36,7 +36,7 @@ load10X = function(dataDirs,channelNames=NULL,...){
 #' Loads unfiltered 10X data from each data-set and identifies which droplets are cells using the cellranger defaults.
 #'
 #' @export
-#' @importFrom DropletUtils read10xCounts
+#' @importFrom Seurat Read10X_h5
 load10XH5 = function(h5Files, channelNames=NULL, ...){
   if(is.null(channelNames))
     channelNames <- sprintf('Channel%d',seq_along(h5Files))
@@ -45,7 +45,7 @@ load10XH5 = function(h5Files, channelNames=NULL, ...){
     message(sprintf("Loading data for 10X channel %s from %s",channelNames[i], h5Files[i]))
     h5File <- h5Files[i]
     #Load unfiltered matrix using DropletUtils
-    tod <- read10xCounts(h5File, type="HDF5")
+    tod <- Read10X_h5(h5File)
     is.cell <- emptyDrops(tod)$FDR <= 0.05
     channels[[channelNames[i]]] <- SoupChannel(tod, tod[,is.cell,drop=FALSE],
                                    channelName=channelNames[i],path=h5File,dataType='10X',...)
