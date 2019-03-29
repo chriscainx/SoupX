@@ -30,3 +30,20 @@ load10X = function(dataDirs,channelNames=NULL,...){
   channels = SoupChannelList(channels)
   return(channels)
 }
+
+#' @importFrom DropletUtils read10xCounts
+load10XH5 = function(h5Files, channelNames=NULL, ...){
+  if(is.null(channelNames))
+    channelNames <- sprintf('Channel%d',seq_along(h5Files))
+  channels <- list()
+  for(i in seq_along(h5Files)){
+    message(sprintf("Loading data for 10X channel %s from %s",channelNames[i], h5Files[i]))
+    h5File <- h5Files[i]
+    #Load unfiltered matrix using DropletUtils
+    tod <- read10xCounts(h5File, type="HDF5")
+    is.cell <- emptyDrops(tod)$FDR <= 0.05
+    channels[[channelNames[i]]] <- SoupChannel(tod, tod[,is.cell,drop=FALSE],
+                                   channelName=channelNames[i],path=h5File,dataType='10X',...)
+  }
+  SoupChannelList(channels)
+}
